@@ -16,7 +16,8 @@
   },
   "files": [
     "dist",
-    "schemas"
+    "schemas",
+    "!dist/**/*.test.*"
   ],
   "sideEffects": false,
   "dependencies": {

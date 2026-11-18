@@ -89,8 +89,6 @@ function validateCommand(argv: string[], io: Io): number {
     return 0;
   }
   io.stdout(formatText(file, problems));
-  for (const error of analysis.schemaErrors)
-    io.stdout(`  error  schema  ${error.path}  ${error.message}\n`);
   return analysis.valid ? 0 : 1;
 }
 
@@ -265,7 +263,7 @@ export function formatText(file: string, diagnostics: Diagnostic[]): string {
   if (diagnostics.length === 0) return `${file}: no findings\n`;
   const lines = [`${file}`];
   for (const item of diagnostics) {
-    const where = item.server ? `  ${item.server}` : "";
+    const where = item.server ? `  ${item.server}` : item.path ? `  ${item.path}` : "";
     lines.push(`  ${item.severity.padEnd(7)} ${item.code}${where}`);
     lines.push(`         ${item.message}`);
     if (item.suggestion) lines.push(`         fix: ${item.suggestion}`);

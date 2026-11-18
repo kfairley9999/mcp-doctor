@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import worker, { handleApi, type Env } from "./worker.js";
+import worker, { SECURITY_HEADERS, handleApi, type Env } from "./worker.js";
 
 describe("playground api", () => {
   it("returns the catalog and analyzes a config without storing it", async () => {
@@ -80,5 +80,58 @@ describe("playground api", () => {
     } as unknown as Env;
     const page = await worker.fetch(new Request("http://playground.test/"), env);
     expect(await page.text()).toBe("page");
+  });
+});
+
+describe("playground hardening", () => {
+  it("answers a wrong method on a known route with 405 and Allow", async () => {
+    const get = await handleApi(new Request("http://playground.test/api/analyze"));
+    expect(get?.status).toBe(405);
+    expect(get?.headers.get("allow")).toBe("POST");
+    const post = await handleApi(
+      new Request("http://playground.test/api/meta", { method: "POST" }),
+    );
+    expect(post?.status).toBe(405);
+    expect(post?.headers.get("allow")).toBe("GET");
+    const unknown = await handleApi(new Request("http://playground.test/api/nope"));
+    expect(unknown?.status).toBe(404);
+    expect(unknown?.headers.get("content-type")).toContain("application/json");
+  });
+
+  it("rejects bodies over 64KB and sends security headers everywhere", async () => {
+    const oversized = await handleApi(
+      new Request("http://playground.test/api/analyze", {
+        method: "POST",
+        body: JSON.stringify({ text: "x".repeat(70 * 1024) }),
+      }),
+    );
+    expect(oversized?.status).toBe(413);
+    expect(((await oversized?.json()) as { error: string }).error).toContain("64KB");
+    for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+      expect(oversized?.headers.get(name)).toBe(value);
+    }
+    const env = {
+      ASSETS: { fetch: async () => new Response("page", { status: 200 }) },
+    } as unknown as Env;
+    const page = await worker.fetch(new Request("http://playground.test/"), env);
+    expect(page.headers.get("content-security-policy")).toContain("frame-ancestors 'none'");
+    expect(page.headers.get("x-frame-options")).toBe("DENY");
+    expect(await page.text()).toBe("page");
+  });
+
+  it("answers deeply nested input with a diagnostic, not a 500", async () => {
+    const response = await handleApi(
+      new Request("http://playground.test/api/analyze", {
+        method: "POST",
+        body: JSON.stringify({ text: "[".repeat(50_000) }),
+      }),
+    );
+    expect(response?.status).toBe(200);
+    const body = (await response?.json()) as {
+      valid: boolean;
+      parseDiagnostics: { message: string }[];
+    };
+    expect(body.valid).toBe(false);
+    expect(body.parseDiagnostics[0]?.message).toMatch(/nested too deeply/);
   });
 });

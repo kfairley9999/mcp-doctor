@@ -8,7 +8,8 @@
     "mcp-doctor-server": "./dist/main.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*"
   ],
   "dependencies": {
     "@mcp-doctor/core": "0.1.0",

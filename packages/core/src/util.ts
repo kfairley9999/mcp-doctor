@@ -13,17 +13,69 @@ export function diagnostic(
   return { severity, code, message, ...extra };
 }
 
-export function lineFromOffset(text: string, offset: number): number {
-  let line = 1;
-  const end = Math.min(offset, text.length);
-  for (let i = 0; i < end; i += 1) {
-    if (text.charCodeAt(i) === 10) line += 1;
+let cachedText: string | undefined;
+let cachedStarts: number[] = [];
+
+/** Offsets where each line begins. Cached for the last text, so repeated lookups stay O(log n). */
+function lineStarts(text: string): number[] {
+  if (cachedText === text) return cachedStarts;
+  const starts = [0];
+  for (let i = 0; i < text.length; i += 1) {
+    if (text.charCodeAt(i) === 10) starts.push(i + 1);
   }
-  return line;
+  cachedText = text;
+  cachedStarts = starts;
+  return starts;
 }
 
+export function lineFromOffset(text: string, offset: number): number {
+  const starts = lineStarts(text);
+  const target = Math.max(0, Math.min(offset, text.length));
+  let low = 0;
+  let high = starts.length - 1;
+  while (low < high) {
+    const mid = (low + high + 1) >> 1;
+    if ((starts[mid] ?? 0) <= target) low = mid;
+    else high = mid - 1;
+  }
+  return low + 1;
+}
+
+let keyedText: string | undefined;
+let keyOffsets = new Map<string, number>();
+
+/** First offset of every quoted string used as an object key. Built once per text. */
+function keyIndex(text: string): Map<string, number> {
+  if (keyedText === text) return keyOffsets;
+  const offsets = new Map<string, number>();
+  const pattern = /"((?:[^"\\\n]|\\.)*)"\s*:/g;
+  for (const match of text.matchAll(pattern)) {
+    let key: string;
+    try {
+      key = JSON.parse(`"${match[1] ?? ""}"`) as string;
+    } catch {
+      continue;
+    }
+    if (!offsets.has(key)) offsets.set(key, match.index);
+  }
+  keyedText = text;
+  keyOffsets = offsets;
+  return offsets;
+}
+
+/**
+ * Line of a server name. Prefers the name used as an object key (`"name":`), so a string
+ * value that happens to equal the name, earlier in the file, does not win. Falls back to the
+ * TOML table header, then to the first quoted occurrence.
+ */
 export function lineOfName(text: string, name: string): number {
-  const needle = `"${name}"`;
+  const keyed = keyIndex(text).get(name);
+  if (keyed !== undefined) return lineFromOffset(text, keyed);
+  const needle = JSON.stringify(name);
+  for (const header of [`.${name}]`, `.${needle}]`]) {
+    const idx = text.indexOf(header);
+    if (idx >= 0) return lineFromOffset(text, idx);
+  }
   const idx = text.indexOf(needle);
   if (idx < 0) return 1;
   return lineFromOffset(text, idx);

@@ -27,8 +27,21 @@ export function parseJsonDocument(text: string): JsonDocument | FailedDocument {
     return { ok: true, value: JSON.parse(source) as unknown, jsonc: false };
   } catch {
     const errors: ParseError[] = [];
-    const value: unknown = parse(source, errors, { allowTrailingComma: true });
-    if (errors.length > 0 || parseTree(source) === undefined) {
+    let value: unknown;
+    let tree: unknown;
+    try {
+      value = parse(source, errors, { allowTrailingComma: true });
+      tree = parseTree(source);
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      return {
+        ok: false,
+        diagnostics: [
+          diagnostic("error", "invalid-json", "Invalid JSON (nested too deeply to parse)."),
+        ],
+      };
+    }
+    if (errors.length > 0 || tree === undefined) {
       const first = errors[0];
       const detail =
         errors.length > 0

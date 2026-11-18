@@ -71,6 +71,7 @@ function handshakeStdio(
     }
     const stderr: string[] = [];
     let stdout = "";
+    let strayStdout: string | undefined;
     let settled = false;
     let attempt = 0;
     let sawInitialize = false;
@@ -108,7 +109,10 @@ function handshakeStdio(
         finish({
           ok: false,
           stage: "timeout",
-          error: `No initialize response after ${timeoutMs}ms.`,
+          error:
+            strayStdout === undefined
+              ? `No initialize response after ${timeoutMs}ms.`
+              : `No initialize response after ${timeoutMs}ms. The server wrote non-JSON to stdout (${JSON.stringify(clipLine(strayStdout))}). stdout is the MCP channel; logs belong on stderr.`,
         });
     }, timeoutMs);
     let grace: ReturnType<typeof setTimeout> = setTimeout(() => undefined, timeoutMs);
@@ -150,11 +154,15 @@ function handshakeStdio(
       stdout = lines.pop() ?? "";
       for (const line of lines) {
         const trimmed = line.trim();
-        if (!trimmed.startsWith("{")) continue;
+        if (!trimmed.startsWith("{")) {
+          if (trimmed !== "") strayStdout ??= trimmed;
+          continue;
+        }
         let message: unknown;
         try {
           message = JSON.parse(trimmed) as unknown;
         } catch {
+          strayStdout ??= trimmed;
           continue;
         }
         if (!isRecord(message)) continue;
@@ -247,7 +255,7 @@ async function handshakeHttp(
     }
     const body = await response.text();
     if (!response.ok) {
-      return { ok: false, stage: "http", error: `HTTP ${response.status}: ${clip(redact(body))}` };
+      return { ok: false, stage: "http", error: `HTTP ${response.status}: ${clipBody(body)}` };
     }
     const message = parseHttpPayload(response.headers.get("content-type"), body);
     if (!message)
@@ -424,6 +432,21 @@ function errorText(error: unknown): string {
 
 function stringOr(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
+}
+
+/** A short, single-line excerpt of an HTTP error body. HTML pages are reduced to their text. */
+export function clipBody(body: string): string {
+  const looksHtml = /^\s*<(!doctype|html|head|body)/i.test(body);
+  const text = (
+    looksHtml ? body.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]*>/g, " ") : body
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+  return clipLine(redact(text), 300);
+}
+
+function clipLine(text: string, max = 120): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
 function clip(text: string): string {

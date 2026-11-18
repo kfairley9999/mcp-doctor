@@ -86,7 +86,7 @@ npm ci
 npm run build
 ```
 
-The CLI is `node packages/cli/dist/main.js`, also `npm run mcp-doctor -- <args>` from the repo root. This package is not published to npm.
+The CLI is `node packages/cli/dist/main.js`, also `npm run mcp-doctor -- <args>` from the repo root. This package is not published to npm, and the npm name `mcp-doctor` belongs to an unrelated package, so `npm install mcp-doctor` does not install this tool.
 
 ```bash
 npm run mcp-doctor -- validate .cursor/mcp.json --client cursor
@@ -171,7 +171,7 @@ The playground imports only the pure library. Handshake and `PATH` checks need a
 
 ## Playground
 
-Paste a config, see validation, lint, and the same servers emitted for every client. The page posts the text to `/api/analyze` on this Worker. The Worker answers and discards the body. It does not log the body, store it, or send it anywhere else.
+Paste a config, see validation, lint, and the same servers emitted for every client. The page posts the text (up to 64KB) to `/api/analyze` on this Worker. The Worker answers and discards the body. It does not log the body, store it, or send it anywhere else.
 
 Live demo: **https://mcp-doctor.kfairley9999.workers.dev** (Cloudflare Workers free tier).
 

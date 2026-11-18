@@ -833,6 +833,16 @@ export function applySafeFixes(
       if (program) {
         server.command = program;
         server.args = [...rest, ...(server.args ?? [])];
+        // The split can expose an npx with no -y that the lint could not see in the joined
+        // string. Add it now so one --fix pass reaches a clean result.
+        const args = server.args;
+        if (
+          basename(program).toLowerCase() === "npx" &&
+          !args.includes("-y") &&
+          !args.includes("--yes")
+        ) {
+          server.args = ["-y", ...args];
+        }
       }
     }
   }

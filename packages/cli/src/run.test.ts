@@ -251,3 +251,33 @@ function readExample(name: string): string {
   const file = path.resolve(fileURLToPath(new URL(`../../../examples/${name}`, import.meta.url)));
   return readFileSync(file, "utf8");
 }
+
+describe("validate output", () => {
+  it("prints each schema error once, with its path", async () => {
+    const io = capture();
+    expect(
+      await run(["validate", "-", "--client", "cursor"], {
+        ...io,
+        readFile: () => JSON.stringify({ mcpServers: { x: { command: 5 } } }),
+      }),
+    ).toBe(1);
+    const out = io.text().out;
+    const typeErrors = out.split("\n").filter((line) => line.includes('Instance type "number"'));
+    expect(typeErrors).toHaveLength(1);
+    expect(out).toContain("#/mcpServers/x/command");
+  });
+
+  it("lint --fix leaves nothing for a second pass to fix", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "mcp-doctor-fix-"));
+    const file = path.join(root, "mcp.json");
+    writeFileSync(file, JSON.stringify({ mcpServers: { a: { command: "npx some-pkg" } } }));
+    await run(["lint", file, "--client", "cursor", "--fix", "--write", "--no-env"], capture());
+    expect(JSON.parse(readFileSync(file, "utf8"))).toEqual({
+      mcpServers: { a: { command: "npx", args: ["-y", "some-pkg"] } },
+    });
+    const second = capture();
+    await run(["lint", file, "--client", "cursor", "--no-env"], second);
+    expect(second.text().out).not.toContain("npx-missing-yes");
+    expect(second.text().out).not.toContain("command-contains-args");
+  });
+});

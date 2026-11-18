@@ -4,7 +4,34 @@ export interface Env {
   ASSETS: Fetcher;
 }
 
-const MAX_BYTES = 256 * 1024;
+/** Real client configs are a few KB. 64KB keeps one request inside the free-tier CPU budget. */
+const MAX_BYTES = 64 * 1024;
+const TOO_LARGE = "Config is larger than 64KB.";
+
+/** Sent on every response: API, static assets, and errors. */
+export const SECURITY_HEADERS: Record<string, string> = {
+  "content-security-policy":
+    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "DENY",
+  "referrer-policy": "no-referrer",
+  "permissions-policy": "camera=(), microphone=(), geolocation=()",
+};
+
+/** Copy a response and add the security headers it is missing. */
+export function withSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!headers.has(name)) headers.set(name, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+const ROUTES: Record<string, string> = { "/api/meta": "GET", "/api/analyze": "POST" };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -15,7 +42,7 @@ export default {
     }
     const asset = await env.ASSETS.fetch(request);
     log(request, asset.status);
-    return asset;
+    return withSecurityHeaders(asset);
   },
 };
 
@@ -32,17 +59,20 @@ export async function handleApi(request: Request): Promise<Response | undefined>
   if (url.pathname === "/api/analyze" && request.method === "POST") {
     return analyze(request);
   }
-  return new Response("Not found", { status: 404, headers: baseHeaders("no-store") });
+  const allowed = ROUTES[url.pathname];
+  if (allowed) {
+    return json({ error: `Use ${allowed}.` }, 405, "no-store", { allow: allowed });
+  }
+  return json({ error: "Not found." }, 404, "no-store");
 }
 
 async function analyze(request: Request): Promise<Response> {
   const length = Number(request.headers.get("content-length") ?? "0");
   if (Number.isFinite(length) && length > MAX_BYTES) {
-    return json({ error: "Config is larger than 256KB." }, 413, "no-store");
+    return json({ error: TOO_LARGE }, 413, "no-store");
   }
   const raw = await request.text();
-  if (raw.length > MAX_BYTES)
-    return json({ error: "Config is larger than 256KB." }, 413, "no-store");
+  if (raw.length > MAX_BYTES) return json({ error: TOO_LARGE }, 413, "no-store");
   let body: unknown;
   try {
     body = JSON.parse(raw) as unknown;
@@ -96,18 +126,24 @@ async function analyze(request: Request): Promise<Response> {
   );
 }
 
-function json(value: unknown, status: number, cache: string): Response {
+function json(
+  value: unknown,
+  status: number,
+  cache: string,
+  extra: Record<string, string> = {},
+): Response {
   return new Response(JSON.stringify(value), {
     status,
-    headers: { ...baseHeaders(cache), "content-type": "application/json; charset=utf-8" },
+    headers: {
+      ...baseHeaders(cache),
+      ...extra,
+      "content-type": "application/json; charset=utf-8",
+    },
   });
 }
 
 function baseHeaders(cache: string): Record<string, string> {
-  return {
-    "cache-control": cache,
-    "x-content-type-options": "nosniff",
-  };
+  return { "cache-control": cache, ...SECURITY_HEADERS };
 }
 
 function log(request: Request, status: number): void {
