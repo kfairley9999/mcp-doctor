@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-doctor.local/schemas/claude-desktop.schema.json",
+  "title": "Claude Desktop MCP config",
+  "description": "stdio only. command, args, and env. A type of http is ignored and the server does not load. Shape documented at https://modelcontextprotocol.io/docs/develop/connect-local-servers. Field meaning is enforced by mcp-doctor's lints; this schema checks types.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "mcpServers": {
+      "type": "object",
+      "description": "Server map for Claude Desktop.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

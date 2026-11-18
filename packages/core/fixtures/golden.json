@@ -1,0 +1,104 @@
+[
+  {
+    "id": "claude-desktop-filesystem",
+    "client": "claude-desktop",
+    "doc": "https://modelcontextprotocol.io/docs/develop/connect-local-servers",
+    "text": "{\n  \"mcpServers\": {\n    \"filesystem\": {\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"@modelcontextprotocol/server-filesystem\",\n        \"/Users/username/Desktop\",\n        \"/Users/username/Downloads\"\n      ]\n    }\n  }\n}\n"
+  },
+  {
+    "id": "claude-desktop-env",
+    "client": "claude-desktop",
+    "doc": "https://modelcontextprotocol.io/docs/tools/debugging",
+    "text": "{\n  \"mcpServers\": {\n    \"myserver\": {\n      \"command\": \"mcp-server-myapp\",\n      \"env\": {\n        \"MYAPP_API_KEY\": \"some_key\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "claude-code-http",
+    "client": "claude-code",
+    "doc": "https://code.claude.com/docs/en/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"shared-server\": {\n      \"type\": \"http\",\n      \"url\": \"https://example.com/mcp\"\n    }\n  }\n}\n"
+  },
+  {
+    "id": "claude-code-stdio",
+    "client": "claude-code",
+    "doc": "https://code.claude.com/docs/en/agent-sdk/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"filesystem\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@modelcontextprotocol/server-filesystem\", \"/Users/me/projects\"]\n    }\n  }\n}\n"
+  },
+  {
+    "id": "claude-code-expansion",
+    "client": "claude-code",
+    "doc": "https://code.claude.com/docs/en/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"api-server\": {\n      \"type\": \"http\",\n      \"url\": \"${API_BASE_URL:-https://api.example.com}/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${API_KEY}\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "cursor-stdio",
+    "client": "cursor",
+    "doc": "https://cursor.com/docs/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"server-name\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"mcp-server\"],\n      \"env\": {\n        \"API_KEY\": \"${env:API_KEY}\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "cursor-remote",
+    "client": "cursor",
+    "doc": "https://cursor.com/docs/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"server-name\": {\n      \"url\": \"http://localhost:3000/mcp\",\n      \"headers\": {\n        \"API_KEY\": \"value\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "vscode-mixed",
+    "client": "vscode",
+    "doc": "https://code.visualstudio.com/docs/agents/reference/mcp-configuration",
+    "text": "{\n  \"inputs\": [\n    {\n      \"type\": \"promptString\",\n      \"id\": \"api-key\",\n      \"description\": \"API key\",\n      \"password\": true\n    }\n  ],\n  \"servers\": {\n    \"local\": {\n      \"type\": \"stdio\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"my-mcp\"],\n      \"env\": {\n        \"API_KEY\": \"${input:api-key}\"\n      }\n    },\n    \"remote\": {\n      \"type\": \"http\",\n      \"url\": \"https://example.com/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${input:api-key}\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "windsurf-github",
+    "client": "windsurf",
+    "doc": "https://docs.devin.ai/windsurf/plugins/cascade/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"github\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@modelcontextprotocol/server-github\"],\n      \"env\": {\n        \"GITHUB_PERSONAL_ACCESS_TOKEN\": \"<YOUR_PERSONAL_ACCESS_TOKEN>\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "windsurf-remote",
+    "client": "windsurf",
+    "doc": "https://docs.devin.ai/windsurf/plugins/cascade/mcp",
+    "text": "{\n  \"mcpServers\": {\n    \"remote-http-mcp\": {\n      \"serverUrl\": \"https://example.com/mcp\",\n      \"headers\": {\n        \"API_KEY\": \"Bearer ${env:AUTH_TOKEN}\"\n      }\n    }\n  }\n}\n"
+  },
+  {
+    "id": "cline-stdio",
+    "client": "cline",
+    "doc": "https://github.com/cline/cline/blob/main/docs/mcp/mcp-overview.mdx",
+    "text": "{\n  \"mcpServers\": {\n    \"local-server\": {\n      \"command\": \"node\",\n      \"args\": [\"/path/to/server.js\"],\n      \"env\": {\n        \"API_KEY\": \"your_api_key\"\n      },\n      \"disabled\": false,\n      \"autoApprove\": []\n    }\n  }\n}\n"
+  },
+  {
+    "id": "cline-http",
+    "client": "cline",
+    "doc": "https://github.com/cline/cline/blob/main/docs/mcp/mcp-overview.mdx",
+    "text": "{\n  \"mcpServers\": {\n    \"remote-server\": {\n      \"type\": \"streamableHttp\",\n      \"url\": \"https://example.com/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer your-token\"\n      },\n      \"disabled\": false,\n      \"autoApprove\": []\n    }\n  }\n}\n"
+  },
+  {
+    "id": "codex-stdio",
+    "client": "codex",
+    "doc": "https://developers.openai.com/codex/config-reference",
+    "text": "[mcp_servers.docs]\ncommand = \"uvx\"\nargs = [\"mcp-server-docs\"]\n\n[mcp_servers.docs.env]\nAPI_KEY = \"value\"\n"
+  },
+  {
+    "id": "codex-http",
+    "client": "codex",
+    "doc": "https://developers.openai.com/codex/config-reference",
+    "text": "[mcp_servers.figma]\nurl = \"https://mcp.figma.com/mcp\"\nbearer_token_env_var = \"FIGMA_TOKEN\"\nstartup_timeout_sec = 20\n"
+  },
+  {
+    "id": "gemini-stdio",
+    "client": "gemini-cli",
+    "doc": "https://geminicli.com/docs/tools/mcp-server/",
+    "text": "{\n  \"mcpServers\": {\n    \"serverName\": {\n      \"command\": \"path/to/server\",\n      \"args\": [\"--arg1\", \"value1\"],\n      \"env\": {\n        \"API_KEY\": \"$MY_API_TOKEN\"\n      },\n      \"cwd\": \"./server-directory\",\n      \"timeout\": 30000,\n      \"trust\": false\n    }\n  }\n}\n"
+  },
+  {
+    "id": "gemini-http",
+    "client": "gemini-cli",
+    "doc": "https://geminicli.com/docs/tools/mcp-server/",
+    "text": "{\n  \"mcpServers\": {\n    \"httpServerWithAuth\": {\n      \"httpUrl\": \"http://localhost:3000/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer your-api-token\"\n      },\n      \"timeout\": 5000\n    }\n  }\n}\n"
+  },
+  {
+    "id": "zed-local-remote",
+    "client": "zed",
+    "doc": "https://zed.dev/docs/ai/mcp",
+    "text": "{\n  \"context_servers\": {\n    \"local-mcp-server\": {\n      \"command\": \"some-command\",\n      \"args\": [\"arg-1\", \"arg-2\"],\n      \"env\": {}\n    },\n    \"remote-mcp-server\": {\n      \"url\": \"https://example.com/mcp\",\n      \"headers\": { \"Authorization\": \"Bearer <token>\" }\n    }\n  }\n}\n"
+  }
+]

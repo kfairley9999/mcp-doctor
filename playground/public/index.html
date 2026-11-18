@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>mcp-doctor</title>
+    <meta
+      name="description"
+      content="Paste an MCP client config. Validate it, lint it, and see the same servers rewritten for every client. The paste stays in this request."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <p class="mark">mcp-doctor</p>
+        <h1>Check a config before a client silently skips it.</h1>
+      </div>
+      <p class="privacy">
+        The paste is posted to this Worker's <code>/api/analyze</code> route, checked in that
+        request, and discarded. It is not stored, not logged, and not sent to any other host. PATH
+        checks and the initialize handshake stay on your machine, in the CLI.
+      </p>
+    </header>
+
+    <main>
+      <section class="panel editor" aria-labelledby="paste-label">
+        <div class="panel-head">
+          <h2 id="paste-label">Config</h2>
+          <div class="controls">
+            <label>
+              Client
+              <select id="client">
+                <option value="">Detect</option>
+              </select>
+            </label>
+            <button type="button" id="example" class="ghost">Load a broken example</button>
+            <button type="button" id="check">Check</button>
+          </div>
+        </div>
+        <textarea
+          id="config"
+          spellcheck="false"
+          aria-label="MCP config"
+          placeholder="Paste claude_desktop_config.json, .mcp.json, .cursor/mcp.json, or another client file."
+        ></textarea>
+        <p id="form-error" class="form-error" hidden></p>
+      </section>
+
+      <section class="panel results" aria-live="polite">
+        <div class="panel-head">
+          <h2>Findings</h2>
+          <p id="status" class="status idle">Nothing checked yet.</p>
+        </div>
+        <div id="empty" class="empty">
+          <p>
+            Paste a config and check it. You will get schema errors, lint findings with a fix, and
+            the same servers emitted for every client, including the fields that cannot come along.
+          </p>
+        </div>
+        <div id="output" hidden>
+          <div id="summary" class="summary"></div>
+          <h3>Diagnostics</h3>
+          <ul id="diagnostics" class="diagnostics"></ul>
+          <h3>Converted</h3>
+          <div id="conversions" class="conversions"></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="matrix-wrap" aria-labelledby="matrix-label">
+      <h2 id="matrix-label">What each client can store</h2>
+      <p class="lede" id="matrix-note">Loaded from this Worker. The same table is in the README.</p>
+      <div class="scroll">
+        <table id="matrix">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        Local tool, schema, and an MCP server live in the same repo. This page is the free-tier
+        playground. MIT license.
+      </p>
+    </footer>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

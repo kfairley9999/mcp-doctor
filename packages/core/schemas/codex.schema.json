@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-doctor.local/schemas/codex.schema.json",
+  "title": "Codex config.toml MCP tables",
+  "description": "TOML tables under mcp_servers. url is streamable HTTP. Headers live in http_headers. A bearer token is bearer_token_env_var. Timeouts are seconds. This schema describes the TOML document after parsing, not the TOML syntax. Documented at https://developers.openai.com/codex/config-reference.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "mcp_servers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "http_headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "env_http_headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "bearer_token_env_var": {
+            "type": "string"
+          },
+          "startup_timeout_sec": {
+            "type": "number"
+          },
+          "startup_timeout_ms": {
+            "type": "number"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

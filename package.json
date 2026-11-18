@@ -1,0 +1,39 @@
+{
+  "name": "mcp-doctor-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Validate, lint, convert, and handshake MCP client configs.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*",
+    "playground"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "schemas:validate": "node packages/core/dist/schema/self-check.js",
+    "schemas:write": "node packages/core/dist/schema/self-check.js --write",
+    "playground:build": "tsc -b packages/core && npm run build -w mcp-doctor-playground",
+    "playground:dry-run": "npm run deploy:dry -w mcp-doctor-playground",
+    "mcp-doctor": "node packages/cli/dist/main.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.19.21",
+    "@vitest/coverage-v8": "^5.1.1",
+    "eslint": "^10.15.0",
+    "fast-check": "^4.10.3",
+    "prettier": "^3.10.1",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^5.1.1"
+  },
+  "license": "MIT"
+}

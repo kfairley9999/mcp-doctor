@@ -1,0 +1,20 @@
+{
+  "name": "mcp-doctor-playground",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "wrangler dev --port 47471 --ip 0.0.0.0",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "deploy:dry": "wrangler deploy --dry-run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mcp-doctor/core": "0.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261118.1",
+    "wrangler": "^4.164.0"
+  }
+}

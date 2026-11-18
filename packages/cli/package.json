@@ -1,0 +1,16 @@
+{
+  "name": "mcp-doctor",
+  "version": "0.1.0",
+  "description": "CLI for validating, linting, converting, and handshaking MCP configs.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "mcp-doctor": "./dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@mcp-doctor/core": "0.1.0"
+  }
+}

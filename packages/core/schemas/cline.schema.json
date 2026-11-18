@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-doctor.local/schemas/cline.schema.json",
+  "title": "Cline MCP config",
+  "description": "Local servers use command. Remote HTTP must set type to streamableHttp. Omitting type on a url selects legacy SSE. disabled and autoApprove are Cline's. Shape documented at https://github.com/cline/cline/blob/main/docs/mcp/mcp-overview.mdx. Field meaning is enforced by mcp-doctor's lints; this schema checks types.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "mcpServers": {
+      "type": "object",
+      "description": "Server map for Cline.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "timeout": {
+            "type": "number"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "autoApprove": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "enum": [
+              "stdio",
+              "sse",
+              "streamableHttp",
+              "ws"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

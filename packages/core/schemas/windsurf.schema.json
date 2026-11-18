@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-doctor.local/schemas/windsurf.schema.json",
+  "title": "Windsurf MCP config",
+  "description": "Remote servers use serverUrl. url is accepted by current Cascade and ignored by older Windsurf builds. ${env:NAME} and ${file:/path} expand. Shape documented at https://docs.devin.ai/windsurf/plugins/cascade/mcp. Field meaning is enforced by mcp-doctor's lints; this schema checks types.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "mcpServers": {
+      "type": "object",
+      "description": "Server map for Windsurf.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "serverUrl": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-doctor.local/schemas/cursor.schema.json",
+  "title": "Cursor MCP config",
+  "description": "Project .cursor/mcp.json or global ~/.cursor/mcp.json. Remote servers use url. Interpolation is ${env:NAME}, ${userHome}, and ${workspaceFolder}. Shape documented at https://cursor.com/docs/mcp. Field meaning is enforced by mcp-doctor's lints; this schema checks types.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "mcpServers": {
+      "type": "object",
+      "description": "Server map for Cursor.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "envFile": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

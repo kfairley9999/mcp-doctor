@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-doctor.local/schemas/vscode.schema.json",
+  "title": "VS Code MCP config",
+  "description": "The key is servers, not mcpServers. type is required. Secrets go through inputs and ${input:id}. ${env:NAME} is the environment form. Shape documented at https://code.visualstudio.com/docs/agents/reference/mcp-configuration. Field meaning is enforced by mcp-doctor's lints; this schema checks types.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "servers": {
+      "type": "object",
+      "description": "Server map for VS Code.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "cwd": {
+            "type": "string"
+          },
+          "envFile": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "enum": [
+              "stdio",
+              "http",
+              "sse"
+            ]
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Prompted values referenced as ${input:id}.",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "id",
+          "description"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "type": {
+            "enum": [
+              "promptString",
+              "pickString"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "password": {
+            "type": "boolean"
+          },
+          "default": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
