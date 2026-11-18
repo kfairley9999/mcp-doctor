@@ -1,5 +1,9 @@
 # mcp-doctor
 
+[![ci](https://github.com/kfairy9999/mcp-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/kfairy9999/mcp-doctor/actions/workflows/ci.yml)
+
+**Live playground:** https://mcp-doctor.kfairley9999.workers.dev
+
 MCP configs fail quietly. A missing `-y`, a `url` where the client reads `serverUrl`, or an `npx` that a GUI cannot see on `PATH` looks like a client bug and is usually the config. mcp-doctor checks the file against the client that will load it, rewrites it for the client you actually use, and opens a real initialize handshake so you can see the failure.
 
 Three surfaces, one library:
@@ -169,13 +173,13 @@ The playground imports only the pure library. Handshake and `PATH` checks need a
 
 Paste a config, see validation, lint, and the same servers emitted for every client. The page posts the text to `/api/analyze` on this Worker. The Worker answers and discards the body. It does not log the body, store it, or send it anywhere else.
 
-Live demo: _not deployed_. Put the `workers.dev` URL here after the steps below.
+Live demo: **https://mcp-doctor.kfairley9999.workers.dev** (Cloudflare Workers free tier).
 
 ![Terminal demo of lint, convert, and doctor](docs/media/demo.gif)
 
 ### Deploy
 
-Do this yourself when you want it public. CI runs the dry run and does not deploy. Nothing in the Worker uses a paid binding. No secrets, no KV, no D1.
+The live demo runs on the Cloudflare Workers free tier. CI runs the dry run and does not deploy. Nothing in the Worker uses a paid binding. No secrets, no KV, no D1.
 
 ```bash
 cd playground
