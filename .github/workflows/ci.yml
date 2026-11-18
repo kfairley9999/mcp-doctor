@@ -22,5 +22,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:coverage
       - run: npm run schemas:validate
-      - run: npm run playground:build
-      - run: npm run playground:dry-run
+      # Wrangler 4 requires Node >= 22.12, so the Worker bundle is checked on Node 22 only.
+      - if: matrix.node == 22
+        run: npm run playground:build
+      - if: matrix.node == 22
+        run: npm run playground:dry-run

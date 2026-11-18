@@ -206,7 +206,7 @@ npm run lint
 npm run schemas:validate
 ```
 
-CI on Node 20 and 22 runs lint, typecheck, tests with the 85% coverage gate, schema self-validation, the playground bundle, and `wrangler deploy --dry-run`.
+CI on Node 20 and 22 runs lint, typecheck, tests with the 85% coverage gate, and schema self-validation. The playground bundle and `wrangler deploy --dry-run` run on Node 22 only, because Wrangler 4 requires Node 22.12 or newer.
 
 ## Limitations
 
