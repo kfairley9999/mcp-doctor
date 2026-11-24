@@ -1,6 +1,6 @@
 # mcp-doctor
 
-[![ci](https://github.com/kfairy9999/mcp-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/kfairy9999/mcp-doctor/actions/workflows/ci.yml)
+[![ci](https://github.com/kfairley9999/mcp-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/kfairley9999/mcp-doctor/actions/workflows/ci.yml)
 
 **Live playground:** https://mcp-doctor.kfairley9999.workers.dev
 
